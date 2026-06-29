@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AIBA - Autonomous Internet Browsing Agent</title>
+<script>
+        // Apply saved theme IMMEDIATELY to prevent flash
+        (function() {
+            var saved = localStorage.getItem('aiba-theme');
+            if (saved === 'light') {
+                document.documentElement.classList.remove('dark');
+            } else {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+<!-- Favicon that follows theme -->
+<link rel="icon" href="aiba_logo_dark_mode.png" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="aiba_logo_white_mode.png" media="(prefers-color-scheme: light)">
+<script>
+        // Set favicon to match saved theme (not just system preference)
+        (function() {
+            var saved = localStorage.getItem('aiba-theme');
+            var link = document.createElement('link');
+            link.rel = 'icon';
+            link.href = saved === 'light' ? 'aiba_logo_white_mode.png' : 'aiba_logo_dark_mode.png';
+            document.head.appendChild(link);
+        })();
+    </script>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..900&amp;family=Space+Grotesk:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffdfa0",
+                        "on-error": "#690005",
+                        "on-secondary": "#2f3131",
+                        "surface-container-low": "var(--color-surface-container-low)",
+                        "on-primary-container": "#636565",
+                        "on-primary-fixed": "#1a1c1c",
+                        "surface-dim": "var(--color-surface-dim)",
+                        "inverse-primary": "#5d5f5f",
+                        "error-container": "#93000a",
+                        "tertiary-container": "#ffdfa0",
+                        "surface-container-high": "var(--color-surface-container-high)",
+                        "primary-fixed-dim": "#c6c6c7",
+                        "on-primary-fixed-variant": "#454747",
+                        "surface-tint": "#c6c6c7",
+                        "surface-variant": "var(--color-surface-variant)",
+                        "surface-bright": "var(--color-surface-bright)",
+                        "on-surface-variant": "var(--color-on-surface-variant)",
+                        "on-tertiary": "#402d00",
+                        "on-secondary-container": "#b5b5b5",
+                        "on-background": "var(--color-on-background)",
+                        "inverse-on-surface": "#313030",
+                        "surface-container-highest": "var(--color-surface-container-highest)",
+                        "outline": "#8e9192",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#e2e2e2",
+                        "tertiary": "var(--color-text-tertiary)",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#261a00",
+                        "surface": "var(--color-surface)",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "primary-container": "#e2e2e2",
+                        "secondary": "#c6c6c6",
+                        "tertiary-fixed-dim": "#f6be39",
+                        "outline-variant": "var(--color-outline-variant)",
+                        "inverse-surface": "#e5e2e1",
+                        "background": "var(--color-bg)",
+                        "surface-container-lowest": "var(--color-surface-container-lowest)",
+                        "on-surface": "var(--color-on-surface)",
+                        "secondary-container": "var(--color-secondary-container)",
+                        "surface-container": "var(--color-surface-container)",
+                        "on-tertiary-container": "#815f00",
+                        "on-tertiary-fixed-variant": "#5c4300",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "primary": "var(--color-primary)",
+                        "on-primary": "#000000",
+                        "primary-fixed": "#e2e2e2",
+                        "accent-amber": "#D4A017",
+                        "border-default": "var(--color-border-default)",
+                        "surface-raised": "var(--color-surface-raised)",
+                        "surface-elevated": "var(--color-surface-elevated)",
+                        "text-dim": "var(--color-text-dim)",
+                        "text-dim-medium": "var(--color-text-dim-medium)",
+                        "text-terminal": "var(--color-text-terminal)",
+                        "card-bg": "var(--color-card-bg)"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px", /* Brutalist strict rules */
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "0px"
+                    },
+                    "spacing": {
+                        "margin-md": "32px",
+                        "gutter": "16px",
+                        "col-1": "80px",
+                        "margin-sm": "16px",
+                        "unit": "4px",
+                        "margin-lg": "64px"
+                    },
+                    "fontFamily": {
+                        "headline-lg-mobile": ["JetBrains Mono"],
+                        "label-mono": ["JetBrains Mono"],
+                        "headline-md": ["JetBrains Mono"],
+                        "body-md": ["JetBrains Mono"], /* Switched to mono for more brutalist feel */
+                        "display-lg": ["JetBrains Mono"],
+                        "headline-lg": ["JetBrains Mono"],
+                        "body-lg": ["Space Grotesk"],
+                        "code-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-mono": ["14px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["20px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "code-sm": ["12px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        :root, html.dark {
+            --color-bg: #000000;
+            --color-primary: #ffffff;
+            --color-on-surface-variant: #c4c7c8;
+            --color-outline-variant: #444748;
+            --color-surface: #141313;
+            --color-surface-dim: #141313;
+            --color-surface-container: #201f1f;
+            --color-surface-container-low: #1c1b1b;
+            --color-surface-container-lowest: #0e0e0e;
+            --color-surface-container-high: #2a2a2a;
+            --color-surface-container-highest: #353434;
+            --color-surface-variant: #353434;
+            --color-surface-bright: #3a3939;
+            --color-on-background: #e5e2e1;
+            --color-on-surface: #e5e2e1;
+            --color-secondary-container: #454747;
+            --color-text-tertiary: #ffffff;
+            --color-border-default: #333333;
+            --color-surface-raised: #0A0A0A;
+            --color-surface-elevated: #0E0E0E;
+            --color-text-dim: #666666;
+            --color-text-dim-medium: #888888;
+            --color-text-terminal: #A0A0A0;
+            --color-card-bg: rgba(0,0,0,0.8);
+            --dot-color: #333333;
+        }
+
+        html:not(.dark) {
+            --color-bg: #f5f5f5;
+            --color-primary: #111111;
+            --color-on-surface-variant: #5f5f5f;
+            --color-outline-variant: #c0c0c0;
+            --color-surface: #f0f0f0;
+            --color-surface-dim: #e0e0e0;
+            --color-surface-container: #e8e8e8;
+            --color-surface-container-low: #ececec;
+            --color-surface-container-lowest: #ffffff;
+            --color-surface-container-high: #e0e0e0;
+            --color-surface-container-highest: #d8d8d8;
+            --color-surface-variant: #e0e0e0;
+            --color-surface-bright: #ffffff;
+            --color-on-background: #1a1a1a;
+            --color-on-surface: #1a1a1a;
+            --color-secondary-container: #e0e0e0;
+            --color-text-tertiary: #666666;
+            --color-border-default: #d0d0d0;
+            --color-surface-raised: #ffffff;
+            --color-surface-elevated: #f0f0f0;
+            --color-text-dim: #888888;
+            --color-text-dim-medium: #aaaaaa;
+            --color-text-terminal: #555555;
+            --color-card-bg: rgba(255,255,255,0.9);
+            --dot-color: #cccccc;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-primary);
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+
+        /* Baseline dot grid */
+        .bg-dot-grid {
+            background-image: radial-gradient(var(--dot-color) 1.0px, transparent 1.0px);
+            background-size: 17px 17px;
+        }
+
+        /* Dithered / Halftone divider */
+        .halftone-divider {
+            height: 1px;
+            background: repeating-linear-gradient(to right, #333333, #333333 1px, transparent 1px, transparent 3px);
+        }
+
+        /* Halftone vertical divider */
+        .halftone-divider-v {
+            width: 1px;
+            background: repeating-linear-gradient(to bottom, #333333, #333333 1px, transparent 1px, transparent 3px);
+        }
+
+        /* Terminal blinking cursor */
+        .blinking-cursor {
+            font-weight: bold;
+            color: #D4A017;
+            animation: 1s blink step-end infinite;
+        }
+        @keyframes blink {
+            from, to { color: transparent; }
+            50% { color: #D4A017; }
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+        .hamburger-line {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--color-primary);
+            transition: all 0.3s ease;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .hamburger-line:nth-child(1) { top: 8px; }
+        .hamburger-line:nth-child(2) { top: 16px; }
+        .hamburger-line:nth-child(3) { top: 24px; }
+        .hamburger-open .hamburger-line:nth-child(1) {
+            top: 16px;
+            transform: translateX(-50%) rotate(45deg);
+        }
+        .hamburger-open .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger-open .hamburger-line:nth-child(3) {
+            top: 16px;
+            transform: translateX(-50%) rotate(-45deg);
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 100;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-border-default);
+            background: var(--color-surface-raised);
+            color: var(--color-primary);
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease, background-color 0s, color 0s;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .back-to-top:hover {
+            background: var(--color-primary);
+            color: var(--color-bg);
+        }
+
+        .brutalist-button {
+            border: 1px solid #ffffff;
+            background-color: transparent;
+            color: #ffffff;
+            transition: none;
+        }
+        html:not(.dark) .brutalist-button {
+            border-color: #1a1a1a;
+            color: #1a1a1a;
+        }
+        .brutalist-button:hover {
+            background-color: #ffffff;
+            color: #000000;
+        }
+        html:not(.dark) .brutalist-button:hover {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+
+        /* Input command line style */
+        .cmd-input::before {
+            content: '> ';
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* 50% dither pattern for overlays */
+        .dither-overlay {
+            background-image: 
+                linear-gradient(45deg, #141313 25%, transparent 25%, transparent 75%, #141313 75%, #141313), 
+                linear-gradient(45deg, #141313 25%, transparent 25%, transparent 75%, #141313 75%, #141313);
+            background-size: 4px 4px;
+            background-position: 0 0, 2px 2px;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        /* Typist effect */
+        .typist-line {
+            display: none;
+        }
+        .typist-line.active {
+            display: block;
+        }
+
+        /* Card hover effect — glassmorphism */
+        .card-premium {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, background-color, backdrop-filter;
+        }
+        .card-premium:hover {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(12px) brightness(1.2);
+            -webkit-backdrop-filter: blur(12px) brightness(1.2);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(212, 160, 23, 0.06), inset 0 0 30px rgba(255, 255, 255, 0.02);
+        }
+
+        /* Glassmorphism hover for beats boxes */
+        .beat-glass {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, background-color, backdrop-filter;
+        }
+        .beat-glass:hover {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            backdrop-filter: blur(12px) brightness(1.15);
+            -webkit-backdrop-filter: blur(12px) brightness(1.15);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(212, 160, 23, 0.06), inset 0 0 30px rgba(255, 255, 255, 0.02);
+            transform: translateY(-1px);
+        }
+
+        /* Phase card hover */
+        .phase-card {
+            transition: all 0.2s ease;
+        }
+        .phase-card:hover {
+            border-color: #555555;
+            background-color: rgba(255,255,255,0.03);
+        }
+
+        /* Smooth section reveal */
+        .section-premium {
+            transition: opacity 0.3s ease;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ffffff;
+        }
+
+        /* 3D Levitating Terminal Animation */
+        @keyframes levitate {
+            0%   { transform: perspective(800px) translateY(0px) rotateX(0deg) rotateY(0deg); }
+            25%  { transform: perspective(800px) translateY(-8px) rotateX(1deg) rotateY(-1.5deg); }
+            50%  { transform: perspective(800px) translateY(-14px) rotateX(-0.5deg) rotateY(1deg); }
+            75%  { transform: perspective(800px) translateY(-5px) rotateX(0.8deg) rotateY(-0.5deg); }
+            100% { transform: perspective(800px) translateY(0px) rotateX(0deg) rotateY(0deg); }
+        }
+        @keyframes levitate-shadow {
+            0%   { opacity: 0.15; transform: scale(1); }
+            50%  { opacity: 0.30; transform: scale(0.92); }
+            100% { opacity: 0.15; transform: scale(1); }
+        }
+        .floating-terminal {
+            animation: levitate 7s cubic-bezier(0.45, 0.05, 0.35, 1) infinite;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+        .floating-terminal-shadow {
+            animation: levitate-shadow 7s cubic-bezier(0.45, 0.05, 0.35, 1) infinite;
+        }
+
+        /* Typing Animation */
+        @keyframes type-line {
+            from { width: 0; opacity: 0; }
+            to { width: 100%; opacity: 1; }
+        }
+        .typing-line {
+            overflow: hidden;
+            white-space: nowrap;
+            display: inline-block;
+            vertical-align: bottom;
+            animation: type-line 1.5s steps(40, end) forwards;
+            opacity: 0;
+            width: 0;
+        }
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 2.0s; }
+        .delay-3 { animation-delay: 2.5s; }
+        .delay-4 { animation-delay: 3.0s; }
+        .delay-5 { animation-delay: 4.5s; }
+        .delay-6 { animation-delay: 6.0s; }
+        .delay-7 { animation-delay: 7.5s; }
+        .delay-8 { animation-delay: 9.0s; }
+        .delay-9 { animation-delay: 10.5s; }
+        .delay-10 { animation-delay: 12.0s; }
+        .delay-11 { animation-delay: 13.0s; }
+        .delay-12 { animation-delay: 14.5s; }
+    </style>
+</head>
+<body class="bg-background text-primary antialiased min-h-screen flex flex-col font-body-lg">
+<!-- Global dot grid structural guide -->
+<div class="fixed inset-0 pointer-events-none bg-dot-grid opacity-40 z-0"></div>
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 bg-background/90 backdrop-blur-sm border-b border-outline-variant font-label-mono text-label-mono">
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg flex flex-row justify-between items-center h-16">
+<div class="font-headline-md text-headline-md text-primary tracking-tighter">
+            <a href="#hero" class="hover:opacity-70 transition-opacity">AIBA</a>
+        </div>
+<!-- Desktop Nav Links -->
+<div class="hidden md:flex flex-row items-center gap-8 text-on-surface-variant">
+<a class="nav-link hover:text-primary transition-none relative after:absolute after:bottom-[-18px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="#swarm" data-section="swarm">SWARM</a>
+<a class="nav-link hover:text-primary transition-none relative after:absolute after:bottom-[-18px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="#capabilities" data-section="capabilities">CAPABILITIES</a>
+<a class="nav-link hover:text-primary transition-none relative after:absolute after:bottom-[-18px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="#beats" data-section="beats">BEATS</a>
+<a class="nav-link hover:text-primary transition-none relative after:absolute after:bottom-[-18px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="#oss" data-section="oss">OSS</a>
+<a class="nav-link hover:text-primary transition-none relative after:absolute after:bottom-[-18px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="#demo" data-section="demo">DEMO</a>
+</div>
+
+<div class="flex items-center gap-3">
+<button id="theme-toggle" class="flex items-center justify-center w-10 h-10 border border-border-default text-primary hover:bg-primary hover:text-background transition-none" aria-label="Toggle theme">
+<span id="theme-toggle-icon" class="material-symbols-outlined" style="font-size: 18px;">dark_mode</span>
+</button>
+<!-- Hamburger Button -->
+<button id="hamburger-btn" class="md:hidden relative w-10 h-10 border border-border-default text-primary hover:bg-primary hover:text-background transition-none" aria-label="Toggle menu">
+<span class="hamburger-line"></span>
+<span class="hamburger-line"></span>
+<span class="hamburger-line"></span>
+</button>
+</div>
+</div>
+<!-- Mobile Menu Panel -->
+<div id="mobile-menu" class="mobile-menu md:hidden border-t border-border-default">
+<div class="flex flex-col gap-0 px-4 sm:px-8 md:px-margin-lg py-4">
+<a class="mobile-nav-link block py-3 text-on-surface-variant hover:text-primary transition-none border-b border-border-default" href="#swarm" data-section="swarm">SWARM</a>
+<a class="mobile-nav-link block py-3 text-on-surface-variant hover:text-primary transition-none border-b border-border-default" href="#capabilities" data-section="capabilities">CAPABILITIES</a>
+<a class="mobile-nav-link block py-3 text-on-surface-variant hover:text-primary transition-none border-b border-border-default" href="#beats" data-section="beats">BEATS</a>
+<a class="mobile-nav-link block py-3 text-on-surface-variant hover:text-primary transition-none border-b border-border-default" href="#oss" data-section="oss">OSS</a>
+<a class="mobile-nav-link block py-3 text-on-surface-variant hover:text-primary transition-none" href="#demo" data-section="demo">DEMO</a>
+</div>
+</div>
+</nav>
+<main class="flex-grow z-10 relative mt-16 md:mt-16">
+<!-- Hero Section -->
+<section class="relative w-full min-h-screen flex flex-col items-center justify-center border-b border-border-default py-24" id="hero">
+<div class="relative z-10 max-w-4xl px-4 sm:px-8 md:px-margin-lg text-center flex flex-col items-center gap-10">
+<!-- Logo (swaps per theme) -->
+<div class="w-36 h-36 flex items-center justify-center border border-border-default relative overflow-hidden">
+<div class="absolute inset-0 bg-dot-grid opacity-80"></div>
+<img src="aiba_logo_white_mode.png" alt="AIBA" class="w-full h-full object-contain p-3 block dark:hidden" />
+<img src="aiba_logo_dark_mode.png" alt="AIBA" class="w-full h-full object-contain p-3 hidden dark:block" />
+</div>
+<h1 class="font-display-lg text-[32px] sm:text-[42px] md:text-[72px] text-primary tracking-tighter uppercase leading-[0.95]">
+                    You define the goal.<br/>It handles the rest.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                    An autonomous engine that thinks, sees, plans, dispatches, verifies, and synthesizes — while you do something else.
+                </p>
+<div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+<a href="https://github.com/hamza-mughal1/AIBA" class="brutalist-button px-10 py-4 font-label-mono text-label-mono mt-4 border-[2px] inline-block text-sm tracking-widest">
+                    [ GITHUB <span class="material-symbols-outlined align-middle ml-2" style="font-size: 16px;">arrow_forward</span> ]
+                </a>
+
+<a href="https://docs.aibacli.tech" class="brutalist-button px-10 py-4 font-label-mono text-label-mono mt-4 border-[2px] inline-block text-sm tracking-widest">
+                    [ DOCS <span class="material-symbols-outlined align-middle ml-2" style="font-size: 16px;">arrow_forward</span> ]
+                </a>
+
+<a href="https://www.linkedin.com/in/-hamza-mughal/" class="brutalist-button px-10 py-4 font-label-mono text-label-mono mt-4 border-[2px] inline-block text-sm tracking-widest">
+                    [ LINKEDIN <span class="material-symbols-outlined align-middle ml-2" style="font-size: 16px;">arrow_forward</span> ]
+                </a>
+</div>
+<div class="font-code-sm text-code-sm text-primary mt-20 opacity-80">
+                &gt; v0.1.0 — Autonomous Internet Browsing Agent
+            </div>
+</section>
+<!-- Swarm Intelligence Logic Section -->
+<section class="relative w-full border-b border-border-default bg-background" id="swarm">
+
+<!-- Heading in normal flow ABOVE animation -->
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg pt-8 md:pt-12 pb-4 md:pb-6 text-center">
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max mx-auto px-3 py-1.5 mb-4">
+[ SWARM_INTELLIGENCE ]
+</div>
+<h2 class="font-headline-lg text-[32px] sm:text-[48px] md:text-[80px] text-primary tracking-[0.2em]">
+SWARM INTELLIGENCE
+</h2>
+</div>
+
+<!-- Animation container with gradient masks at top + bottom edges -->
+<div id="swarm-anim-container" class="w-full h-[400px] sm:h-[500px] md:h-[600px] relative overflow-hidden" style="-webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);">
+<script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+<div id="threejs-swarm-v2" style="width:100%;height:100%"></div>
+<div id="swarm-labels" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+<script>
+(function() {
+const container = document.getElementById('threejs-swarm-v2');
+const labelContainer = document.getElementById('swarm-labels');
+if (!container || !labelContainer) return;
+
+const width = container.clientWidth || window.innerWidth;
+const height = container.clientHeight || window.innerHeight;
+
+const scene = new THREE.Scene();
+const worldGroup = new THREE.Group();
+scene.add(worldGroup);
+
+const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
+camera.position.set(0, 0, 5.0); // Adjusted slightly to frame the new compact layout perfectly
+
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setSize(width, height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+container.appendChild(renderer.domElement);
+
+// Colors
+const amber = 0xD4A017;
+const steel = 0x8BA4B0;
+
+function isDarkMode() {
+    return document.documentElement.classList.contains('dark');
+}
+function getWhite() {
+    return isDarkMode() ? 0xFFFFFF : 0x1A1A1A;
+}
+
+// Materials
+const mainMat = new THREE.MeshBasicMaterial({ color: amber, wireframe: true });
+const subMat = new THREE.MeshBasicMaterial({ color: getWhite(), wireframe: true });
+const taskMat = new THREE.MeshBasicMaterial({ color: steel, transparent: true, opacity: 0.8 });
+const lineMat = new THREE.MeshBasicMaterial({ color: getWhite(), transparent: true, opacity: 0.35 });
+
+// Geometries
+const mainGeom = new THREE.OctahedronGeometry(0.5, 0);
+const subGeom = new THREE.IcosahedronGeometry(0.25, 0);
+const taskGeomH = new THREE.BoxGeometry(0.5, 0.15, 0.05);
+const taskGeomV = new THREE.BoxGeometry(0.15, 0.5, 0.05);
+
+const elements = [];
+
+const taskLabels = [
+    "[searching google...]", "[researching reddit...]",
+    "[parsing github...]", "[extracting twitter...]",
+    "[analyzing docs...]", "[fetching news...]"
+];
+
+// ── HTML Label Helpers ──
+const labels = [];
+function projectToScreen(worldPos) {
+    const v = worldPos.clone().project(camera);
+    return {
+        left: ((v.x * 0.5 + 0.5) * labelContainer.clientWidth) + 'px',
+        top: ((-v.y * 0.5 + 0.5) * labelContainer.clientHeight) + 'px'
+    };
+}
+
+// Added baseRotDeg parameter to handle horizontal vs vertical starting states
+function addLabel(text, worldPos, colorHex, fontSize, meshRef, baseRotDeg = 0) {
+    const el = document.createElement('div');
+    el.textContent = text;
+    el.style.cssText = [
+        'position:absolute', 'white-space:nowrap',
+        'transition:opacity 0.3s', 'opacity:0',
+        'font-family:"JetBrains Mono",monospace', 'font-size:' + (fontSize || '10') + 'px',
+        'color:' + (colorHex || '#FFFFFF'), 'letter-spacing:0.05em',
+        'text-shadow:' + (isDarkMode()
+            ? '0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7), 0 0 2px #000'
+            : '0 0 4px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7), 0 0 2px #fff'),
+        'background:' + (isDarkMode() ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.85)'),
+        'padding:2px 6px',
+        'transform-origin: center center',
+        'backdrop-filter:blur(4px)'
+    ].join(';');
+    labelContainer.appendChild(el);
+    const obj = { el, worldPos: worldPos.clone(), meshRef, baseRotDeg, colorHex, labelType: colorHex };
+    labels.push(obj);
+    return obj;
+}
+
+function updateLabelPos(label) {
+    const worldPos = new THREE.Vector3();
+    if (label.meshRef) {
+        label.meshRef.getWorldPosition(worldPos);
+    } else {
+        worldPos.copy(label.worldPos);
+    }
+    
+    // Rotate the offset vector alongside the worldGroup so it stays pegged to the right side of the object
+    if (label.offset) {
+        const rotatedOffset = label.offset.clone().applyAxisAngle(new THREE.Vector3(0, 0, 1), worldGroup.rotation.z);
+        worldPos.add(rotatedOffset);
+    }
+    
+    const p = projectToScreen(worldPos);
+    label.el.style.left = p.left;
+    label.el.style.top = p.top;
+
+    // Apply translation for centering, then rotate by base rotation + the inverse of the world rotation 
+    // (Three.js +Z is counter-clockwise, CSS positive rotation is clockwise)
+    label.el.style.transform = `translate(-50%,-50%) rotate(calc(${label.baseRotDeg}deg - ${worldGroup.rotation.z}rad))`;
+}
+
+// ── Web Pattern Layout (L-Shape Orthogonal Design - MORE COMPACT) ──
+const layout = {
+    main: { pos: [0, 0, 0] },
+    subs: [
+        { id: 'top',    pos: [0, 1.6, 0] },
+        { id: 'left',   pos: [-1.8, 0, 0] },
+        { id: 'right',  pos: [1.8, 0, 0] },
+        { id: 'bottom', pos: [0, -1.6, 0] }
+    ],
+    tasks: [
+        // Top sub-agent branches (Reduced lengths from corners)
+        { id: 't_top_l',  pos: [-1.2, 2.6, 0], corner: [-1.2, 1.6, 0], subIdx: 0, orient: 'v' },
+        { id: 't_top_r',  pos: [1.2, 2.6, 0],  corner: [1.2, 1.6, 0],  subIdx: 0, orient: 'v' },
+        // Left sub-agent branches
+        { id: 't_left_t', pos: [-2.8, 1.0, 0], corner: [-1.8, 1.0, 0], subIdx: 1, orient: 'h' },
+        { id: 't_left_b', pos: [-2.8, -1.0, 0],corner: [-1.8, -1.0, 0],subIdx: 1, orient: 'h' },
+        // Right sub-agent branches
+        { id: 't_right_t',pos: [2.8, 1.0, 0],  corner: [1.8, 1.0, 0],  subIdx: 2, orient: 'h' },
+        { id: 't_right_b',pos: [2.8, -1.0, 0], corner: [1.8, -1.0, 0], subIdx: 2, orient: 'h' },
+        // Bottom sub-agent branches
+        { id: 't_bot_l',  pos: [-1.2, -2.6, 0],corner: [-1.2, -1.6, 0],subIdx: 3, orient: 'v' },
+        { id: 't_bot_r',  pos: [1.2, -2.6, 0], corner: [1.2, -1.6, 0], subIdx: 3, orient: 'v' }
+    ]
+};
+
+// Helper: BoxGeometry-based line (thick)
+function createLine(start, end) {
+    const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+    const dir = new THREE.Vector3().copy(end).sub(start);
+    const length = dir.length();
+    dir.normalize();
+    const geom = new THREE.BoxGeometry(0.015, 0.015, length);
+    const mesh = new THREE.Mesh(geom, lineMat);
+    mesh.position.copy(mid);
+    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), dir);
+    mesh.quaternion.copy(quat);
+    mesh.visible = false;
+    worldGroup.add(mesh);
+    return mesh;
+}
+
+function initScene() {
+    // ── Main Agent ──
+    const mainAgent = new THREE.Mesh(mainGeom, mainMat);
+    mainAgent.position.set(...layout.main.pos);
+    worldGroup.add(mainAgent);
+    elements.push({ mesh: mainAgent, type: 'main' });
+    const mainLabel = addLabel('MAIN AGENT', new THREE.Vector3(0, 0, 0), '#D4A017', 11, mainAgent);
+    mainLabel.labelType = 'main';
+    mainLabel.offset = new THREE.Vector3(0, -0.75, 0);
+
+    // ── Sub Agents ──
+    layout.subs.forEach((subDef, si) => {
+        const pos = new THREE.Vector3(...subDef.pos);
+        const sub = new THREE.Mesh(subGeom, subMat);
+        sub.position.copy(pos);
+        sub.scale.set(0, 0, 0);
+        worldGroup.add(sub);
+
+        const line = createLine(new THREE.Vector3(...layout.main.pos), pos);
+        const subObj = { mesh: sub, type: 'sub', line: line, tasks: [] };
+        elements.push(subObj);
+
+        const subLabel = addLabel('SUB AGENT', pos.clone(), isDarkMode() ? '#FFFFFF' : '#1A1A1A', 9, sub);
+        subLabel.offset = new THREE.Vector3(0, -0.55, 0);
+        subLabel.labelType = 'sub';
+
+        // ── Tasks for this sub ──
+        layout.tasks.filter(t => t.subIdx === si).forEach(tDef => {
+            const tPos = new THREE.Vector3(...tDef.pos);
+            const cornerPos = new THREE.Vector3(...tDef.corner);
+            
+            const task = new THREE.Mesh(tDef.orient === 'v' ? taskGeomV : taskGeomH, taskMat.clone());
+            task.position.copy(tPos);
+            task.scale.set(0, 0, 0);
+            worldGroup.add(task);
+
+            const tLine1 = createLine(pos, cornerPos);
+            const tLine2 = createLine(cornerPos, tPos);
+            
+            const taskObj = { mesh: task, type: 'task', lines: [tLine1, tLine2] };
+            elements.push(taskObj);
+            subObj.tasks.push(taskObj);
+
+            const labelIdx = layout.tasks.indexOf(tDef);
+            const labelText = taskLabels[labelIdx % taskLabels.length];
+            const isVertical = tDef.orient === 'v';
+            
+            let taskOff = new THREE.Vector3();
+            if (tDef.orient === 'h') {
+                taskOff.set(0, 0.25, 0);
+            } else {
+                taskOff.set(tPos.x < 0 ? -0.25 : 0.25, 0, 0);
+            }
+            // Pass -90 degrees as base rotation for vertical tasks so they orient properly
+            const tLabel = addLabel(labelText, tPos.clone(), '#5999ff', 10, task, isVertical ? -90 : 0);
+            tLabel.labelType = 'task';
+            tLabel.offset = taskOff;
+        });
+    });
+}
+
+initScene();
+
+// ── Watch for theme changes → update white elements ──
+function applySwarmTheme() {
+    const c = getWhite();
+    subMat.color.setHex(c);
+    lineMat.color.setHex(c);
+    // Update label backgrounds + text colors for light/dark
+    const bg = isDarkMode() ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.85)';
+    const shadow = isDarkMode()
+        ? '0 0 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.7), 0 0 2px #000'
+        : '0 0 4px rgba(255,255,255,0.9), 0 0 8px rgba(255,255,255,0.7), 0 0 2px #fff';
+    labels.forEach(lbl => {
+        lbl.el.style.background = bg;
+        lbl.el.style.textShadow = shadow;
+        if (lbl.labelType === 'sub') {
+            lbl.el.style.color = isDarkMode() ? '#FFFFFF' : '#1A1A1A';
+        } else if (lbl.labelType === 'task') {
+            lbl.el.style.color = '#5999ff';
+        }
+    });
+}
+const themeObserver = new MutationObserver(() => applySwarmTheme());
+themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+let start = Date.now();
+const duration = 10000;
+
+function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = (Date.now() - start) % duration;
+    const t = elapsed / duration;
+
+    // Slow anti-clockwise rotation of the entire web
+    worldGroup.rotation.z += 0.0008;
+
+    elements.forEach(el => {
+        if (el.type === 'main') {
+            el.mesh.rotation.y += 0.01;
+            const pulse = 1 + Math.sin(t * Math.PI * 2) * 0.1;
+            el.mesh.scale.set(pulse, pulse, pulse);
+        }
+
+        if (el.type === 'sub') {
+            el.mesh.rotation.x += 0.01;
+            if (t > 0.05 && t < 0.85) {
+                const s = Math.min(1, (t - 0.05) * 8);
+                el.mesh.scale.set(s, s, s);
+                el.line.visible = true;
+            } else if (t >= 0.85) {
+                const s = Math.max(0, 1 - (t - 0.85) * 12);
+                el.mesh.scale.set(s, s, s);
+                el.line.visible = s > 0;
+            } else {
+                el.mesh.scale.set(0, 0, 0);
+                el.line.visible = false;
+            }
+        }
+
+        if (el.type === 'task') {
+            if (t > 0.25 && t < 0.65) {
+                const s = Math.min(1, (t - 0.25) * 8);
+                el.mesh.scale.set(s, s, s);
+                el.lines.forEach(l => l.visible = true);
+                if (t > 0.55) {
+                    el.mesh.material.color.setHex(amber);
+                } else {
+                    el.mesh.material.color.setHex(steel);
+                }
+            } else if (t >= 0.65) {
+                const s = Math.max(0, 1 - (t - 0.65) * 12);
+                el.mesh.scale.set(s, s, s);
+                el.lines.forEach(l => l.visible = s > 0);
+            } else {
+                el.mesh.scale.set(0, 0, 0);
+                el.lines.forEach(l => l.visible = false);
+            }
+        }
+    });
+
+    labels.forEach(label => {
+        updateLabelPos(label);
+        if (label.meshRef) {
+            label.el.style.opacity = label.meshRef.scale.x > 0.05 ? '1' : '0';
+        }
+    });
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    const w = container.clientWidth || window.innerWidth;
+    const h = container.clientHeight || window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+});
+})();
+</script>
+</div>
+
+<!-- Phase Cards in normal flow BELOW animation -->
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg pt-4 md:pt-6 pb-12 md:pb-20">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="phase-card bg-card-bg/35 border border-border-default p-4 md:p-6 backdrop-blur-md">
+<div class="font-label-mono text-[#D4A017] mb-2">[ PHASE_01 ]</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Break the goal into tasks</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">The orchestrator plans an approach, then decomposes your objective into independent research tasks — each assigned to an independent sub-agent.</p>
+</div>
+<div class="phase-card bg-card-bg/35 border border-border-default p-4 md:p-6 backdrop-blur-md">
+<div class="font-label-mono text-[#D4A017] mb-2">[ PHASE_02 ]</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Dispatch the swarm</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Up to 50 sub-agents launch in parallel. Each runs on its own: Think, Plan, Discover, Execute, Synthesize, and Report.</p>
+</div>
+<div class="phase-card bg-card-bg/35 border border-border-default p-4 md:p-6 backdrop-blur-md">
+<div class="font-label-mono text-[#D4A017] mb-2">[ PHASE_03 ]</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2">Cross-verify and synthesize</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Findings from every agent are cross-referenced across sources, contradictions are flagged, and a single synthesized report is delivered — no hallucinations, just verified signal.</p>
+</div>
+</div>
+</div>
+
+</section>
+<!-- Capabilities Grid -->
+<section class="relative w-full py-24 border-b border-border-default" id="capabilities">
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg">
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max px-2 py-1 mb-12">
+                    [ CORE_CAPABILITIES ]
+                </div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 border border-border-default">
+<!-- Cap 1 -->
+<div class="card-premium p-5 md:p-8 border-b md:border-r lg:border-b-border-default lg:border-r border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">hub</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Swarm Parallelism</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Up to 50 sub-agents running simultaneously. Each with its own context, tools, and memory — no shared state, no bottlenecks.</p>
+</div>
+<!-- Cap 2 -->
+<div class="card-premium p-5 md:p-8 border-b lg:border-b-border-default lg:border-r border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">schedule</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Scheduled Autonomy</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Cron-powered beats that run completely unattended. AIBA wakes up, performs the task, and emails you the report. With everything logged.</p>
+</div>
+<!-- Cap 3 -->
+<div class="card-premium p-5 md:p-8 border-b md:border-r lg:border-r-0 lg:border-b-border-default border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">fact_check</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Deep Verification</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Cross-references every finding across multiple independent sources. Never trusts a single data point. Contradictions are surfaced, not smoothed over.</p>
+</div>
+<!-- Cap 4 -->
+<div class="card-premium p-5 md:p-8 border-b lg:border-r border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">visibility</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Browser Intelligence</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Full Playwright-powered browser automation. Navigates SPAs, clicks through pagination, fills forms, takes screenshots, and extracts from dynamic DOMs that static scrapers can't touch.</p>
+</div>
+<!-- Cap 5 -->
+<div class="card-premium p-5 md:p-8 border-b md:border-r lg:border-r border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">memory_alt</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Session Persistence</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Save and load complete conversation histories. The REPL stays open after results — refine, pivot, drill deeper, or pick up where you left off days later.</p>
+</div>
+<!-- Cap 6 -->
+<div class="card-premium p-5 md:p-8 border-b border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">tune</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Effort Calibration</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Three effort modes — Quick, Balanced, Max — control temperature, token budgets, and instruction depth. From rapid scans to exhaustive multi-wave deep-dives. You decide the depth.</p>
+</div>
+<!-- Cap 7 -->
+<div class="card-premium p-5 md:p-8 lg:border-r border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">imagesmode</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Visual Understanding</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Not just browser control — actual visual comprehension. Reads screenshots, interprets charts, analyzes images, and extracts structured data from what it sees. The browser is eyes, not just hands.</p>
+</div>
+<!-- Cap 8 -->
+<div class="card-premium p-5 md:p-8 md:border-r lg:border-r border-border-default flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">shield</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Strict Guardrails</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Constrained execution boundaries prevent unintended actions. Domain allowlists, max allowed budget, and tool-level permissions ensure the agent never overreaches — no surprises, ever.</p>
+</div>
+<!-- Cap 9 -->
+<div class="card-premium p-5 md:p-8 flex flex-col gap-4 cursor-default">
+<span class="material-symbols-outlined text-[32px] text-primary" style="font-variation-settings: 'FILL' 0;">folder_open</span>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Sandboxed File I/O</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Reads and filters files within a constrained directory. No arbitrary filesystem access — every read is scoped, filtered, and auditable. Your machine stays your machine.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Beats Section -->
+<section class="relative w-full py-32 bg-background border-b border-border-default" id="beats">
+<div class="absolute inset-0 pointer-events-none bg-dot-grid opacity-60 z-0"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg relative z-10">
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max px-3 py-1.5 mb-16">
+                    [ SCHEDULED_BEATS ]
+                </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center mb-16">
+<div>
+<h2 class="font-headline-lg text-[28px] sm:text-[36px] md:text-[56px] text-primary tracking-tighter mb-6 leading-[1.05]">
+                            Configure it once.<br/>It runs on its own.
+                        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 leading-relaxed">
+                            Beats are cron-scheduled autonomous runs. AIBA wakes up, does the job, and emails you the report. You don't even need to open a terminal.
+                        </p>
+<!-- Beat Config Preview -->
+<div class="border border-border-default bg-surface-raised p-6 font-code-sm text-[14px] leading-relaxed beat-glass">
+<div class="text-text-dim mb-3 font-label-mono text-[11px] tracking-widest">beats.yaml</div>
+<div><span class="text-[#D4A017]">beats</span>:</div>
+<div class="ml-4">- <span class="text-[#D4A017]">name:</span> <span class="text-text-terminal">"competitor watch"</span></div>
+<div class="ml-6"><span class="text-[#D4A017]">schedule:</span> <span class="text-text-terminal">"0 8 * * *"</span></div>
+<div class="ml-6"><span class="text-[#D4A017]">template:</span> <span class="text-text-terminal">default</span></div>
+<div class="ml-6"><span class="text-[#D4A017]">prompt:</span> <span class="text-text-terminal">"Check competitor pricing..."</span></div>
+<div class="ml-6"><span class="text-[#D4A017]">mode:</span> <span class="text-text-terminal">swarm</span></div>
+<div class="ml-6"><span class="text-[#D4A017]">effort:</span> <span class="text-text-terminal">balanced</span></div>
+</div>
+</div>
+<!-- Email Preview -->
+<div class="border border-border-default bg-surface-raised shadow-2xl beat-glass">
+<div class="bg-surface-elevated border-b border-border-default px-5 py-3 font-label-mono text-label-mono text-text-dim flex items-center justify-between">
+<span class="tracking-[0.15em]">INBOX</span>
+<span class="text-[#444444] text-[11px]">08:04 AM</span>
+</div>
+<div class="p-5 space-y-4">
+<div class="border-b border-border-default pb-4">
+<div class="flex justify-between items-start mb-1">
+<div>
+<div class="font-label-mono text-[#D4A017] text-[11px] tracking-widest mb-1">AIBA BEAT REPORT</div>
+<div class="font-headline-md text-[16px] text-primary">competitor watch</div>
+</div>
+<div class="font-code-sm text-code-sm text-text-dim">Just now</div>
+</div>
+<div class="font-body-md text-[14px] text-text-dim-medium mt-1 leading-relaxed">Report attached. 8 sources checked, 3 pricing changes detected.</div>
+</div>
+<div class="border-b border-border-default pb-4 opacity-50">
+<div class="font-label-mono text-[11px] text-text-dim tracking-widest mb-1">AIBA BEAT REPORT</div>
+<div class="font-headline-md text-[16px] text-text-dim-medium">daily brief</div>
+<div class="font-body-md text-[14px] text-text-dim mt-1">Yesterday</div>
+</div>
+<div class="opacity-25">
+<div class="font-label-mono text-[11px] text-text-dim tracking-widest mb-1">AIBA BEAT REPORT</div>
+<div class="font-headline-md text-[16px] text-text-dim">weekly roundup</div>
+<div class="font-body-md text-[14px] text-text-dim mt-1">Jun 23</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- OSS / Production Grade Section -->
+<section class="relative w-full py-32 bg-background border-b border-border-default" id="oss">
+<div class="absolute inset-0 pointer-events-none bg-dot-grid opacity-60 z-0"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg relative z-10">
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max px-3 py-1.5 mb-16">
+                    [ OPEN_SOURCE ]
+                </div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 mb-20">
+<!-- Left: headline + founder -->
+<div>
+<h2 class="font-headline-lg text-[28px] sm:text-[36px] md:text-[56px] text-primary tracking-tighter mb-6 leading-[1.05]">
+                            Built in the open.<br/>Production grade.
+                        </h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 leading-relaxed">
+                            AIBA is free and open source under the APL. Every line of code is public. Every decision is in the commit log. No black box. No proprietary magic.
+                        </p>
+<div class="border border-border-default bg-surface-raised p-6 beat-glass">
+<div class="flex items-center gap-4 mb-4">
+<div class="w-12 h-12 border border-border-default bg-surface-elevated flex items-center justify-center overflow-hidden">
+<img src="hamza.jpeg" alt="Hamza Mughal" class="w-full h-full object-cover" />
+</div>
+<div>
+<div class="font-label-mono text-label-mono text-primary">Hamza Mughal</div>
+<div class="font-code-sm text-code-sm text-text-dim">Founder &amp; Maintainer</div>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Solo-built from the ground up. Every architecture decision, every line of code.</p>
+</div>
+</div>
+<!-- Right: stats grid -->
+<div class="grid grid-cols-1 gap-0 border border-border-default">
+<div class="flex items-center gap-4 p-5 border-b border-border-default beat-glass">
+<span class="material-symbols-outlined text-[28px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">code</span>
+<div>
+<div class="font-headline-md text-headline-md text-primary">Open Source</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">Licensed under APL. Public repository on GitHub. Fork it, audit it, use it.</div>
+</div>
+</div>
+<div class="flex items-center gap-4 p-5 border-b border-border-default beat-glass">
+<span class="material-symbols-outlined text-[28px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">verified</span>
+<div>
+<div class="font-headline-md text-headline-md text-primary">100% Test Coverage</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">257 tests across unit and integration suites. Every tool, every agent path, every edge case covered.</div>
+</div>
+</div>
+<div class="flex items-center gap-4 p-5 border-b border-border-default beat-glass">
+<span class="material-symbols-outlined text-[28px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">checklist</span>
+<div>
+<div class="font-headline-md text-headline-md text-primary">Ruff + Pyright + CI</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">Ruff-formatted code. Pyright strict type checking. GitHub Actions CI enforces every commit on main.</div>
+</div>
+</div>
+<div class="flex items-center gap-4 p-5 border-b border-border-default beat-glass">
+<span class="material-symbols-outlined text-[28px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">description</span>
+<div>
+<div class="font-headline-md text-headline-md text-primary">Fully Documented</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">Every module, every function, every config option. Complete docs with setup guides and usage examples.</div>
+</div>
+</div>
+<div class="flex items-center gap-4 p-5 beat-glass">
+<span class="material-symbols-outlined text-[28px] text-[#D4A017]" style="font-variation-settings: 'FILL' 0;">science</span>
+<div>
+<div class="font-headline-md text-headline-md text-primary">Beta — v0.1.0</div>
+<div class="font-body-md text-body-md text-on-surface-variant mt-1">In active development.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Terminal Demo Section -->
+<section class="relative w-full py-32 bg-background border-b border-border-default" id="demo">
+<div class="absolute inset-0 pointer-events-none bg-dot-grid opacity-60 z-0"></div>
+<div class="max-w-5xl mx-auto px-4 sm:px-8 md:px-margin-lg relative z-10 flex flex-col items-center">
+<!-- Levitating shadow beneath terminal -->
+<div class="w-3/4 h-4 mx-auto -mb-2 rounded-full bg-black/30 dark:bg-black/50 blur-md floating-terminal-shadow"></div>
+<div class="w-full max-w-4xl border border-border-default bg-surface-raised shadow-2xl flex flex-col floating-terminal">
+<!-- Terminal Header -->
+<div class="bg-surface-elevated border-b border-border-default px-3 md:px-5 py-3 flex items-center justify-between font-label-mono text-label-mono text-text-dim gap-2">
+<div class="hidden sm:flex gap-2">
+<div class="w-3 h-3 rounded-full bg-[#555555]"></div>
+<div class="w-3 h-3 rounded-full bg-[#555555]"></div>
+<div class="w-3 h-3 rounded-full bg-[#555555]"></div>
+</div>
+<span class="tracking-[0.15em] truncate text-[12px] md:text-[14px]">AIBA_SETUP</span>
+<div class="text-[#333333] text-[10px] shrink-0">● IDLE</div>
+</div>
+<!-- Terminal Body -->
+<div id="demo-terminal-body" class="p-4 md:p-6 font-code-sm text-[11px] md:text-[14px] leading-[1.6] text-text-terminal h-[400px] md:h-[520px] overflow-auto font-['JetBrains_Mono',monospace] whitespace-pre-wrap break-all max-w-full"></div>
+</div>
+</div>
+
+<script>
+(function() {
+    const terminal = document.getElementById('demo-terminal-body');
+    const section = document.getElementById('demo');
+    const statusDot = section?.querySelector('.text-\\[10px\\]');
+
+    if (!terminal) return;
+
+    // ── Line definitions ──────────────────────────────────────────────
+    // Each line: { text, color?, speed?, delay? }
+    // color: 'primary' | 'amber' | 'dim' | 'input' | 'header' | 'none'
+    // speed: ms per character (default 8)
+    // delay: ms pause before this line (default 0)
+
+    const L = (text, opts = {}) => ({ text, ...opts });
+
+    const lines = [
+        // ── Splash ──
+        L('', { delay: 3}),
+        L('\u2500'.repeat(50), { color: 'dim', speed: 1, delay: 3}),
+        L('\u221E  A I B A   Autonomous Internet Browsing Agent', { color: 'primary', speed: 1, delay: 3}),
+        L('\u2500'.repeat(50), { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+
+        // ── Step 1 ──
+        L('  Step 1 \u2014 Select Mode', { color: 'header', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('  [1]  Agent   Single autonomous agent, full internet access', { color: 'amber', speed: 1, delay: 3}),
+        L('          Best for focused tasks, single-domain research.', { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3 }),
+        L('  [2]  Swarm   Orchestrated fleet of parallel sub-agents', { color: 'amber', speed: 1, delay: 3}),
+        L('          Best for large-scale research, multi-hop mining.', { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('  \u25B8  Enter 1 or 2:', { color: 'input', speed: 1, delay: 3}),
+        L('1', { color: 'amber', speed: 8, delay: 3}),
+
+        // ── Step 2 ──
+        L('', { delay: 3}),
+        L('\u2500'.repeat(50), { color: 'dim', speed: 1, delay: 3}),
+        L('  Step 2 \u2014 Select Template', { color: 'header', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('  [1]  default', { color: 'amber', speed: 1, delay: 3}),
+        L('      General-purpose AI assistant with full internet access. Good for', { color: 'dim', speed: 1, delay: 3}),
+        L('      research, browsing, QA testing, and open-ended exploration.', { color: 'dim', speed: 1, delay: 3 }),
+        L('', { delay: 3 }),
+        L('  [2]  job_search', { color: 'amber', speed: 1, delay: 3}),
+        L('      LinkedIn job discovery with direct contact extraction. Derives role', { color: 'dim', speed: 1, delay: 3}),
+        L('      titles from your profile, searches LinkedIn Jobs, and hunts for', { color: 'dim', speed: 1, delay: 3 }),
+        L('      recruiter emails per verified job posting.', { color: 'dim', speed: 1, delay: 3 }),
+        L('', { delay: 3 }),
+        L('  [3]  osint', { color: 'amber', speed: 1, delay: 3}),
+        L('      Deep open-source intelligence investigation. Maps a person or', { color: 'dim', speed: 1, delay: 3}),
+        L('      company\u2019s digital footprint across social media, public records,', { color: 'dim', speed: 1, delay: 3 }),
+        L('      news archives, and corporate databases. Produces a structured', { color: 'dim', speed: 1, delay: 3 }),
+        L('      intelligence dossier.', { color: 'dim', speed: 1, delay: 3 }),
+        L('', { delay: 3}),
+        L('  \u25B8  Enter 1\u20133:', { color: 'input', speed: 1, delay: 3}),
+        L('1', { color: 'amber', speed: 8, delay: 3}),
+
+        // ── Step 3 ──
+        L('', { delay: 3}),
+        L('\u2500'.repeat(50), { color: 'dim', speed: 1, delay: 3}),
+        L('  Step 3 \u2014 Effort Level', { color: 'header', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('  [1]  quick', { color: 'amber', speed: 1, delay: 3}),
+        L('      Fast & cheap \u2014 minimal tool calls, short responses. Good for quick lookups.', { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3 }),
+        L('  [2]  balanced', { color: 'amber', speed: 1, delay: 3}),
+        L('      Thorough & pragmatic \u2014 cross-check 2\u20133 sources. Good default.', { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3 }),
+        L('  [3]  max', { color: 'amber', speed: 1, delay: 3}),
+        L('      Exhaustive deep-dive \u2014 maximum tools, maximum tokens, maximum quality.', { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('  \u25B8  Enter 1\u20133:', { color: 'input', speed: 1, delay: 3}),
+        L('1', { color: 'amber', speed: 8, delay: 3}),
+
+        // ── Step 4 ──
+        L('', { delay: 3}),
+        L('\u2500'.repeat(50), { color: 'dim', speed: 1, delay: 3}),
+        L('  Step 4 of 4 \u2014 Extra Notes', { color: 'header', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('  The template already generated a detailed prompt.', { color: 'dim', speed: 1, delay: 3}),
+        L('  Add any extra context, URLs, or notes below (optional).', { color: 'dim', speed: 1, delay: 3}),
+        L('  (Ctrl+D or empty line to skip)', { color: 'dim', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('do something...', { color: 'input', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+        L('', { delay: 100 }),
+
+        // ── Summary ──
+        L('\u2550'.repeat(50), { color: 'primary', speed: 1, delay: 3}),
+        L('  Launch Summary', { color: 'primary', speed: 1, delay: 3}),
+        L('\u2550'.repeat(50), { color: 'primary', speed: 1, delay: 3}),
+        L('  Mode:  AGENT', { color: 'amber', speed: 1, delay: 3}),
+        L('  Prompt:  do something...', { color: 'amber', speed: 1, delay: 3}),
+        L('\u2550'.repeat(50), { color: 'primary', speed: 1, delay: 3}),
+        L('', { delay: 3}),
+    ];
+
+    // ── Color map ──
+    function colorClass(c) {
+        switch(c) {
+            case 'primary': return 'text-primary';
+            case 'amber': return 'text-[#D4A017]';
+            case 'dim': return 'text-text-dim';
+            case 'input': return 'text-text-terminal';
+            case 'header': return 'text-text-dim-medium';
+            default: return '';
+        }
+    }
+
+    // ── Terminal state ──
+    let currentLineIdx = 0;
+    let charIdx = 0;
+    let timer = null;
+    let active = false;
+
+    function reset() {
+        if (timer) { clearTimeout(timer); timer = null; }
+        terminal.innerHTML = '';
+        currentLineIdx = 0;
+        charIdx = 0;
+        active = false;
+        if (statusDot) statusDot.textContent = '\u25CF IDLE';
+    }
+
+    function typeNextChar() {
+        if (currentLineIdx >= lines.length) {
+            active = false;
+            if (statusDot) statusDot.textContent = '\u25CF DONE';
+            // Add blinking cursor at end
+            const cursor = document.createElement('span');
+            cursor.className = 'blinking-cursor ml-0';
+            cursor.textContent = '_';
+            terminal.appendChild(cursor);
+            return;
+        }
+
+        const line = lines[currentLineIdx];
+        const content = line.text;
+
+        if (charIdx === 0) {
+            // Create the line element
+            const el = document.createElement('div');
+            el.className = 'typing-active ' + colorClass(line.color || '');
+            el.dataset.idx = currentLineIdx;
+            terminal.appendChild(el);
+        }
+
+        const el = terminal.lastElementChild;
+
+        if (charIdx < content.length) {
+            // Type next character
+            const span = document.createElement('span');
+            span.className = 'char-char';
+            span.textContent = content[charIdx];
+            el.appendChild(span);
+            charIdx++;
+            const speed = line.speed || 8;
+            // Auto-scroll to bottom
+            terminal.scrollTop = terminal.scrollHeight;
+            timer = setTimeout(typeNextChar, speed);
+        } else {
+            // Line done — move to next
+            charIdx = 0;
+            currentLineIdx++;
+            const delay = lines[currentLineIdx]?.delay || 0;
+            timer = setTimeout(typeNextChar, delay);
+        }
+    }
+
+    function start() {
+        reset();
+        active = true;
+        if (statusDot) statusDot.textContent = '\u25CF RUNNING';
+        const initialDelay = lines[0]?.delay || 500;
+        timer = setTimeout(typeNextChar, initialDelay);
+    }
+
+    // ── Intersection Observer ──
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (!active || terminal.children.length === 0) {
+                    start();
+                }
+            } else {
+                if (active) {
+                    reset();
+                }
+            }
+        });
+    }, { threshold: 0.3 });
+
+    observer.observe(section);
+})();
+</script>
+</section>
+</main>
+<!-- Back to Top Button -->
+<button id="back-to-top" class="back-to-top" aria-label="Back to top" title="Back to top">
+<span class="material-symbols-outlined" style="font-size: 20px;">arrow_upward</span>
+</button>
+<!-- Footer -->
+<footer class="w-full bg-background border-t border-outline-variant font-code-sm text-code-sm z-10 relative">
+<div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex flex-col items-center md:items-start gap-2">
+<div class="font-headline-md text-headline-md text-primary tracking-tighter">AIBA</div>
+<div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-wider">
+                © 2026 — Autonomous Internet Browsing Agent
+            </div>
+</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-none relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="#">v0.1.0</a>
+<a class="text-on-surface-variant hover:text-primary transition-none relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="https://github.com/hamza-mughal1/AIBA">GITHUB</a>
+<a class="text-on-surface-variant hover:text-primary transition-none relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="https://hamza-mughal1.github.io/AIBA">DOCUMENTATION</a>
+<a class="text-on-surface-variant hover:text-primary transition-none relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[1px] after:bg-primary hover:after:w-full after:transition-all after:duration-200" href="https://www.linkedin.com/in/-hamza-mughal/">LINKEDIN</a>
+</div>
+</div>
+</footer>
+
+<script>
+(function() {
+    // ── 1. Theme Toggle ──────────────────────────────────────────
+    var toggle = document.getElementById('theme-toggle');
+    var icon = document.getElementById('theme-toggle-icon');
+    if (!toggle) return;
+
+    function setTheme(theme) {
+        if (theme === 'light') {
+            document.documentElement.classList.remove('dark');
+            icon.textContent = 'light_mode';
+        } else {
+            document.documentElement.classList.add('dark');
+            icon.textContent = 'dark_mode';
+        }
+        try { localStorage.setItem('aiba-theme', theme); } catch(e) {}
+        updateFavicon(theme);
+    }
+
+    function updateFavicon(theme) {
+        var link = document.querySelector('link[rel="icon"]');
+        if (link) {
+            link.href = theme === 'light' ? 'aiba_logo_white_mode.png' : 'aiba_logo_dark_mode.png';
+        }
+    }
+
+    var isDark = document.documentElement.classList.contains('dark');
+    icon.textContent = isDark ? 'dark_mode' : 'light_mode';
+    updateFavicon(isDark ? 'dark' : 'light');
+
+    toggle.addEventListener('click', function() {
+        var isDarkNow = document.documentElement.classList.contains('dark');
+        setTheme(isDarkNow ? 'light' : 'dark');
+    });
+
+    // ── 2. Mobile Hamburger Menu ─────────────────────────────────
+    var hamburger = document.getElementById('hamburger-btn');
+    var mobileMenu = document.getElementById('mobile-menu');
+    var mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', function() {
+            var isOpen = mobileMenu.classList.contains('open');
+            if (isOpen) {
+                mobileMenu.classList.remove('open');
+                hamburger.classList.remove('hamburger-open');
+            } else {
+                mobileMenu.classList.add('open');
+                hamburger.classList.add('hamburger-open');
+            }
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                mobileMenu.classList.remove('open');
+                hamburger.classList.remove('hamburger-open');
+            });
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('open');
+                hamburger.classList.remove('hamburger-open');
+            }
+        });
+    }
+
+    // ── 3. Scroll-Spy for Active Nav Links ────────────────────────
+    var sections = document.querySelectorAll('section[id]');
+    var navLinks = document.querySelectorAll('.nav-link');
+    var allMobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+    function updateActiveNav() {
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        var currentId = '';
+
+        sections.forEach(function(section) {
+            var sectionTop = section.offsetTop - 100;
+            var sectionHeight = section.offsetHeight;
+            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                currentId = section.getAttribute('id');
+            }
+        });
+
+        // Update desktop nav links
+        navLinks.forEach(function(link) {
+            link.classList.remove('text-primary');
+            if (link.getAttribute('data-section') === currentId) {
+                link.classList.add('text-primary');
+            }
+        });
+
+        // Update mobile nav links
+        allMobileLinks.forEach(function(link) {
+            link.classList.remove('text-primary');
+            if (link.getAttribute('data-section') === currentId) {
+                link.classList.add('text-primary');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    updateActiveNav(); // Initial call
+
+    // ── 4. Scroll-Reveal Animations ──────────────────────────────
+    var revealEls = document.querySelectorAll(
+        '.phase-card, .card-premium, .beat-glass, section h2, section .font-label-mono.border, .brutalist-button, #beats .grid > div, #oss .grid > div'
+    );
+
+    revealEls.forEach(function(el) {
+        el.classList.add('reveal');
+    });
+
+    var revealObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(function(el) {
+        revealObserver.observe(el);
+    });
+
+    // ── 5. Back-to-Top Button ────────────────────────────────────
+    var backToTop = document.getElementById('back-to-top');
+    if (backToTop) {
+        window.addEventListener('scroll', function() {
+            var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollY > 600) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }, { passive: true });
+
+        backToTop.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+})();
+</script>
+</body></html>
