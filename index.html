@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 
 <html class="dark" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>AIBA — Autonomous Internet Browsing Agent | Open Source Browser Agent &amp; Swarm Intelligence</title>
-<meta name="description" content="AIBA (aibacli) is the most advanced open-source autonomous internet browsing agent. Powered by swarm intelligence — deploy 50+ parallel sub-agents for browser automation, web research, data synthesis, and scheduled cron beats. Built with Playwright and LLM technology.">
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>AIBA — Autonomous Internet Browsing Agent</title>
+<meta name="description" content="AIBA (aibacli) is the most advanced open-source autonomous internet browsing agent. Powered by swarm intelligence — deploy 50+ parallel sub-agents for browser automation, web research, and data synthesis.">
 <meta name="keywords" content="AIBA, aibacli, aibacli.tech, browser agent, autonomous browsing agent, AI browser agent, swarm intelligence, open source agent, internet browsing agent, AI agent, web automation, browser automation, Playwright agent, AI research agent, autonomous web agent, LLM browser agent">
 <meta name="author" content="Hamza Mughal">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -25,8 +25,8 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://aibacli.tech/">
-<meta property="og:title" content="AIBA — Autonomous Internet Browsing Agent | Open Source Browser Agent">
-<meta property="og:description" content="AIBA (aibacli) is the most advanced open-source autonomous internet browsing agent. Powered by swarm intelligence — deploy 50+ parallel sub-agents for browser automation and deep research.">
+<meta property="og:title" content="AIBA — Autonomous Internet Browsing Agent">
+<meta property="og:description" content="AIBA (aibacli) is the most advanced open-source autonomous internet browsing agent with swarm intelligence — deploy 50+ parallel sub-agents for browser automation.">
 <meta property="og:image" content="https://aibacli.tech/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -34,7 +34,7 @@
 <meta property="og:site_name" content="AIBA">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@aibacli">
-<meta name="twitter:title" content="AIBA — Autonomous Internet Browsing Agent | Open Source Browser Agent">
+<meta name="twitter:title" content="AIBA — Autonomous Internet Browsing Agent">
 <meta name="twitter:description" content="The most advanced open-source autonomous internet browsing agent. Swarm intelligence with 50+ parallel sub-agents for browser automation.">
 <meta name="twitter:image" content="https://aibacli.tech/og-image.png">
 <meta name="twitter:image:alt" content="AIBA — Autonomous Internet Browsing Agent">
@@ -685,9 +685,9 @@
 </div>
 </div>
 </nav>
-<main class="flex-grow z-10 relative mt-16 md:mt-16">
+<main class="flex-grow z-10 relative mt-16 md:mt-16" role="main">
 <!-- Hero Section -->
-<section class="relative w-full min-h-screen flex flex-col items-center justify-center border-b border-border-default py-24" id="hero">
+<section class="relative w-full min-h-screen flex flex-col items-center justify-center border-b border-border-default py-24" id="hero" aria-label="Hero">
 <div class="relative z-10 max-w-4xl px-4 sm:px-8 md:px-margin-lg text-center flex flex-col items-center gap-10">
 <!-- Logo (swaps per theme) -->
 <div class="w-36 h-36 flex items-center justify-center border border-border-default relative overflow-hidden">
@@ -714,18 +714,19 @@
 <div class="font-code-sm text-code-sm text-primary mt-20 opacity-80">
                 &gt; v0.1.0 — Autonomous Internet Browsing Agent
             </div>
+</div>
 </section>
 <!-- Swarm Intelligence Logic Section -->
-<section class="relative w-full border-b border-border-default bg-background" id="swarm">
+<section class="relative w-full border-b border-border-default bg-background" id="swarm" aria-label="Swarm Intelligence Architecture">
 
 <!-- Heading in normal flow ABOVE animation -->
 <div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg pt-8 md:pt-12 pb-4 md:pb-6 text-center">
-<div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max mx-auto px-3 py-1.5 mb-4">
+<h2 class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max mx-auto px-3 py-1.5 mb-4">
 [ SWARM_INTELLIGENCE ]
-</div>
-<h2 class="font-headline-lg text-[32px] sm:text-[48px] md:text-[80px] text-primary tracking-[0.2em]">
-SWARM INTELLIGENCE
 </h2>
+<h3 class="font-headline-lg text-[32px] sm:text-[48px] md:text-[80px] text-primary tracking-[0.2em]">
+SWARM INTELLIGENCE
+</h3>
 <p class="sr-only">AIBA's swarm intelligence browser agent architecture: one orchestrator decomposes goals into parallel research tasks for up to 50 sub-agents, each running autonomous browsing and verification.</p>
 </div>
 
@@ -1070,7 +1071,7 @@ window.addEventListener('resize', () => {
 
 </section>
 <!-- Capabilities Grid -->
-<section class="relative w-full py-24 border-b border-border-default" id="capabilities">
+<section class="relative w-full py-24 border-b border-border-default" id="capabilities" aria-label="Core Capabilities">
 <div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg">
 <div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max px-2 py-1 mb-12">
                     [ CORE_CAPABILITIES ]
@@ -1140,7 +1141,7 @@ window.addEventListener('resize', () => {
 </div>
 </section>
 <!-- Beats Section -->
-<section class="relative w-full py-32 bg-background border-b border-border-default" id="beats">
+<section class="relative w-full py-32 bg-background border-b border-border-default" id="beats" aria-label="Scheduled Beats">
 <div class="absolute inset-0 pointer-events-none bg-dot-grid opacity-60 z-0"></div>
 <div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg relative z-10">
 <div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max px-3 py-1.5 mb-16">
@@ -1199,7 +1200,7 @@ window.addEventListener('resize', () => {
 </div>
 </section>
 <!-- OSS / Production Grade Section -->
-<section class="relative w-full py-32 bg-background border-b border-border-default" id="oss">
+<section class="relative w-full py-32 bg-background border-b border-border-default" id="oss" aria-label="Open Source">
 <div class="absolute inset-0 pointer-events-none bg-dot-grid opacity-60 z-0"></div>
 <div class="max-w-7xl mx-auto px-4 sm:px-8 md:px-margin-lg relative z-10">
 <div class="font-label-mono text-label-mono text-on-surface-variant uppercase tracking-widest border border-border-default w-max px-3 py-1.5 mb-16">
@@ -1269,7 +1270,7 @@ window.addEventListener('resize', () => {
 </div>
 </section>
 <!-- Terminal Demo Section -->
-<section class="relative w-full py-32 bg-background border-b border-border-default" id="demo">
+<section class="relative w-full py-32 bg-background border-b border-border-default" id="demo" aria-label="Terminal Demo">
 <div class="absolute inset-0 pointer-events-none bg-dot-grid opacity-60 z-0"></div>
 <div class="max-w-5xl mx-auto px-4 sm:px-8 md:px-margin-lg relative z-10 flex flex-col items-center">
 <!-- Levitating shadow beneath terminal -->
